@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Menggunakan Bootstrap dari pip -->
+    <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
+    <title>Optimalisasi Rute Mahasiswa</title>
+</head>
+
+<body>
+
+    <div class="container mt-5">
+        <h1>Optimalisasi Rute Mahasiswa</h1>
+        <form id="shortestPathForm">
+            <div class="mb-3">
+                <label for="startBuilding" class="form-label">Gedung Awal</label>
+                <select class="form-select" id="startBuilding" name="start_building">
+                    {% for building in buildings %}
+                    <option value="{{ building }}">{{ building }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="endBuilding" class="form-label">Gedung Tujuan</label>
+                <select class="form-select" id="endBuilding" name="end_building">
+                    {% for building in buildings %}
+                    <option value="{{ building }}">{{ building }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="button" class="btn btn-primary" onclick="calculateShortestPath()">Hitung Rute
+                Terpendek</button>
+        </form>
+        <div id="result" class="mt-3"></div>
+    </div>
+
+    <!-- Menggunakan Bootstrap JS dan jQuery dari pip -->
+    <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+    <script>
+        function calculateShortestPath() {
+            var startBuilding = document.getElementById('startBuilding').value;
+            var endBuilding = document.getElementById('endBuilding').value;
+
+            $.ajax({
+                type: 'POST',
+                url: '/shortest_path',
+                data: {
+                    start_building: startBuilding,
+                    end_building: endBuilding
+                },
+                success: function (data) {
+                    if (data.status === 'success') {
+                        document.getElementById('result').innerHTML = data.result;
+                    } else {
+                        document.getElementById('result').innerHTML = 'Error: ' + data.message;
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>
