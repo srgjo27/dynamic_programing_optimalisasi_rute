@@ -20,8 +20,7 @@
             <div class="row">
                 <div class="col-md-6">
                     <div class="card">
-                        <img src="{{ url_for('static', filename='images/main_graph.jpeg') }}" class="card-img-top"
-                            alt="Main Graph">
+                        <img id="buildingImage" class="card-img-top" alt="Main Graph">
                     </div>
                 </div>
 
@@ -32,6 +31,7 @@
                                 <div class="mb-3">
                                     <label for="startBuilding" class="form-label">Gedung Awal</label>
                                     <select class="form-select" id="startBuilding" name="start_building">
+                                        <option value="" selected>-- Pilih Awal --</option>
                                         {% for building in buildings %}
                                         <option value="{{ building }}">{{ building }}</option>
                                         {% endfor %}
@@ -41,6 +41,7 @@
                                 <div class="mb-3">
                                     <label for="endBuilding" class="form-label">Gedung Tujuan</label>
                                     <select class="form-select" id="endBuilding" name="end_building">
+                                        <option value="" selected>-- Pilih Akhir --</option>
                                         {% for building in buildings %}
                                         <option value="{{ building }}">{{ building }}</option>
                                         {% endfor %}
@@ -73,9 +74,28 @@
     <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
     <script>
+        document.getElementById('buildingImage').src = '{{ url_for("static", filename="images/main_graph.jpeg") }}';
+
         function calculateShortestPath() {
             var startBuilding = document.getElementById('startBuilding').value;
             var endBuilding = document.getElementById('endBuilding').value;
+
+            if (startBuilding === "" || endBuilding === "") {
+                alert("Harap pilih gedung awal dan tujuan terlebih dahulu.");
+                return;
+            }
+
+            if (startBuilding === endBuilding) {
+                alert("Gedung awal dan tujuan tidak boleh sama. Harap pilih gedung yang berbeda.");
+                return;
+            }
+
+            if (startBuilding === "KB" && endBuilding === "KL") {
+                alert("Rute dari KB ke KL bukan ruangan belajar.");
+                return;
+            }
+
+            updateBuildingImage(startBuilding, endBuilding);
 
             $.ajax({
                 type: 'POST',
@@ -99,8 +119,67 @@
 
         function clearResult() {
             document.getElementById('result').innerHTML = '';
+
+            document.getElementById('startBuilding').value = '';
+            document.getElementById('endBuilding').value = '';
+
+            document.getElementById('buildingImage').src = '{{ url_for("static", filename="images/main_graph.jpeg") }}';
+        }
+
+        function updateBuildingImage(startBuilding, endBuilding) {
+            var imagePaths = {
+                'GD 8-Auditorium': '{{ url_for("static", filename="images/gd8_audit.jpeg") }}',
+                'Auditorium-GD 8': '{{ url_for("static", filename="images/gd8_audit.jpeg") }}',
+                'GD 8-GD 9': '{{ url_for("static", filename="images/gd8_gd9.jpeg") }}',
+                'GD 9-GD 8': '{{ url_for("static", filename="images/gd8_gd9.jpeg") }}',
+                'GD 8-KB': '{{ url_for("static", filename="images/kb_gd8.jpeg") }}',
+                'KB-GD 8': '{{ url_for("static", filename="images/kb_gd8.jpeg") }}',
+                'GD 8-GD 5': '{{ url_for("static", filename="images/gd8_gd5.jpeg") }}',
+                'GD 5-GD 8': '{{ url_for("static", filename="images/gd8_gd5.jpeg") }}',
+                'GD 8-GD 7': '{{ url_for("static", filename="images/gd8_gd7.jpeg") }}',
+                'GD 7-GD 8': '{{ url_for("static", filename="images/gd8_gd7.jpeg") }}',
+                'GD 8-KL': '{{ url_for("static", filename="images/kl_gd8.jpeg") }}',
+                'KL-GD 8': '{{ url_for("static", filename="images/kl_gd8.jpeg") }}',
+                'GD 9-KB': '{{ url_for("static", filename="images/kb_gd9.jpeg") }}',
+                'KB-GD 9': '{{ url_for("static", filename="images/kb_gd9.jpeg") }}',
+                'GD 9-Auditorium': '{{ url_for("static", filename="images/gd9_audit.jpeg") }}',
+                'Auditorium-GD 9': '{{ url_for("static", filename="images/gd9_audit.jpeg") }}',
+                'GD 9-GD 5': '{{ url_for("static", filename="images/gd9_gd5.jpeg") }}',
+                'GD 5-GD 9': '{{ url_for("static", filename="images/gd9_gd5.jpeg") }}',
+                'GD 9-GD 7': '{{ url_for("static", filename="images/gd9_gd7.jpeg") }}',
+                'GD 7-GD 9': '{{ url_for("static", filename="images/gd9_gd7.jpeg") }}',
+                'GD 9-KL': '{{ url_for("static", filename="images/kl_gd9.jpeg") }}',
+                'KL-GD 9': '{{ url_for("static", filename="images/kl_gd9.jpeg") }}',
+                'KB-Auditorium': '{{ url_for("static", filename="images/kb_audit.jpeg") }}',
+                'Auditorium-KB': '{{ url_for("static", filename="images/kb_audit.jpeg") }}',
+                'KB-GD 5': '{{ url_for("static", filename="images/kb_gd5.jpeg") }}',
+                'GD 5-KB': '{{ url_for("static", filename="images/kb_gd5.jpeg") }}',
+                'KB-GD 7': '{{ url_for("static", filename="images/kb_gd7.jpeg") }}',
+                'GD 7-KB': '{{ url_for("static", filename="images/kb_gd7.jpeg") }}',
+                'Auditorium-GD 5': '{{ url_for("static", filename="images/gd5_audit.jpeg") }}',
+                'GD 5-Auditorium': '{{ url_for("static", filename="images/gd5_audit.jpeg") }}',
+                'Auditorium-GD 7': '{{ url_for("static", filename="images/gd7_audit.jpeg") }}',
+                'GD 7-Auditorium': '{{ url_for("static", filename="images/gd7_audit.jpeg") }}',
+                'Auditorium-KL': '{{ url_for("static", filename="images/kl_audit.jpeg") }}',
+                'KL-Auditorium': '{{ url_for("static", filename="images/kl_audit.jpeg") }}',
+                'GD 5-GD 7': '{{ url_for("static", filename="images/gd7_gd5.jpeg") }}',
+                'GD 7-GD 5': '{{ url_for("static", filename="images/gd7_gd5.jpeg") }}',
+                'GD 5-KL': '{{ url_for("static", filename="images/kl_gd5.jpeg") }}',
+                'KL-GD 5': '{{ url_for("static", filename="images/kl_gd5.jpeg") }}',
+                'GD 7-KL': '{{ url_for("static", filename="images/kl_gd7.jpeg") }}',
+                'KL-GD 7': '{{ url_for("static", filename="images/kl_gd7.jpeg") }}',
+            };
+
+            var imageKey = startBuilding + '-' + endBuilding;
+
+            if (imagePaths.hasOwnProperty(imageKey)) {
+                document.getElementById('buildingImage').src = imagePaths[imageKey];
+            } else {
+                document.getElementById('buildingImage').src = '{{ url_for("static", filename="images/main_graph.jpeg") }}';
+            }
         }
     </script>
+
 </body>
 
 </html>

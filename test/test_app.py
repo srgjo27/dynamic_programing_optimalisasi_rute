@@ -1,7 +1,8 @@
+import torch
 import heapq
 
 def dijkstra(graph, start, end):
-    distances = {node:float('inf') for node in graph}
+    distances = {node: float('inf') for node in graph}
     distances[start] = 0
 
     paths = {node: [] for node in graph}
@@ -10,7 +11,9 @@ def dijkstra(graph, start, end):
     priority_queue = [(0, start)]
 
     while priority_queue:
-        current_distance, current_node = heapq.heappop(priority_queue)
+        current_distance, current_node = priority_queue[0]
+        priority_queue = priority_queue[1:]
+        current_distance = -current_distance  # Invert distance for min-heap behavior
 
         if current_distance > distances[current_node]:
             continue
@@ -20,7 +23,8 @@ def dijkstra(graph, start, end):
             if distance < distances[neighbor]:
                 distances[neighbor] = distance
                 paths[neighbor] = paths[current_node] + [neighbor]
-                heapq.heappush(priority_queue, (distance, neighbor))
+                heapq.heappush(priority_queue, (-distance, neighbor))
+
     return paths[end]
 
 graph = {
@@ -38,6 +42,11 @@ graph = {
     'GD 5': {'GD 7': 70, 'Auditorium': 130, 'OT': 90},
     'GD 7': {'GD 5': 70, 'OT': 120, 'KL': 230}
 }
+
+# Convert graph weights to PyTorch tensors
+for node in graph:
+    for neighbor in graph[node]:
+        graph[node][neighbor] = torch.tensor(graph[node][neighbor], dtype=torch.float)
 
 start_node = 'GD 8'
 end_node = 'GD 5'
