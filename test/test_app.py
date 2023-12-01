@@ -1,5 +1,7 @@
 import torch
 import heapq
+import networkx as nx
+import matplotlib.pyplot as plt
 
 def dijkstra(graph, start, end):
     distances = {node: float('inf') for node in graph}
@@ -13,7 +15,7 @@ def dijkstra(graph, start, end):
     while priority_queue:
         current_distance, current_node = priority_queue[0]
         priority_queue = priority_queue[1:]
-        current_distance = -current_distance  # Invert distance for min-heap behavior
+        current_distance = -current_distance  
 
         if current_distance > distances[current_node]:
             continue
@@ -48,7 +50,23 @@ for node in graph:
     for neighbor in graph[node]:
         graph[node][neighbor] = torch.tensor(graph[node][neighbor], dtype=torch.float)
 
+# Find the shortest route
 start_node = 'GD 8'
-end_node = 'GD 5'
+end_node = 'GD 7'
 shortest_route = dijkstra(graph, start_node, end_node)
 print(f'Rute terpendek dari {start_node} ke {end_node}: {shortest_route}')
+
+# Create a directed graph using networkx
+G = nx.DiGraph(graph)
+
+# Draw the graph with black arrows and red nodes
+pos = nx.spring_layout(G, k=0.3)  # Adjust the value of k for optimal node spacing
+nx.draw(G, pos, with_labels=True, font_weight='bold', node_color='lightblue', edge_color='black', width=2, arrows=True, connectionstyle='arc3,rad=0.1', edgecolors='black')
+nx.draw_networkx_nodes(G, pos, nodelist=shortest_route, node_color='red', node_size=1000, edgecolors='black')
+
+# Add labels to the nodes
+node_labels = {node: node if node in shortest_route else '' for node in G.nodes()}
+nx.draw_networkx_labels(G, pos, labels=node_labels)
+
+# Show the plot
+plt.show()

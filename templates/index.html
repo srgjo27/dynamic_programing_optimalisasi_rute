@@ -74,6 +74,7 @@
     <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
     <script>
+        // Set initial image source when the page is loaded
         document.getElementById('buildingImage').src = '{{ url_for("static", filename="images/main_graph.jpeg") }}';
 
         function calculateShortestPath() {
@@ -95,8 +96,6 @@
                 return;
             }
 
-            updateBuildingImage(startBuilding, endBuilding);
-
             $.ajax({
                 type: 'POST',
                 url: '/shortest_path',
@@ -107,6 +106,7 @@
                 success: function (data) {
                     if (data.status === 'success') {
                         document.getElementById('result').innerHTML = data.result;
+                        document.getElementById('buildingImage').src = '/' + data.graph_image_path;
                     } else {
                         document.getElementById('result').innerHTML = 'Error: ' + data.message;
                     }
@@ -124,59 +124,6 @@
             document.getElementById('endBuilding').value = '';
 
             document.getElementById('buildingImage').src = '{{ url_for("static", filename="images/main_graph.jpeg") }}';
-        }
-
-        function updateBuildingImage(startBuilding, endBuilding) {
-            var imagePaths = {
-                'GD 8-Auditorium': '{{ url_for("static", filename="images/gd8_audit.jpeg") }}',
-                'Auditorium-GD 8': '{{ url_for("static", filename="images/gd8_audit.jpeg") }}',
-                'GD 8-GD 9': '{{ url_for("static", filename="images/gd8_gd9.jpeg") }}',
-                'GD 9-GD 8': '{{ url_for("static", filename="images/gd8_gd9.jpeg") }}',
-                'GD 8-KB': '{{ url_for("static", filename="images/kb_gd8.jpeg") }}',
-                'KB-GD 8': '{{ url_for("static", filename="images/kb_gd8.jpeg") }}',
-                'GD 8-GD 5': '{{ url_for("static", filename="images/gd8_gd5.jpeg") }}',
-                'GD 5-GD 8': '{{ url_for("static", filename="images/gd8_gd5.jpeg") }}',
-                'GD 8-GD 7': '{{ url_for("static", filename="images/gd8_gd7.jpeg") }}',
-                'GD 7-GD 8': '{{ url_for("static", filename="images/gd8_gd7.jpeg") }}',
-                'GD 8-KL': '{{ url_for("static", filename="images/kl_gd8.jpeg") }}',
-                'KL-GD 8': '{{ url_for("static", filename="images/kl_gd8.jpeg") }}',
-                'GD 9-KB': '{{ url_for("static", filename="images/kb_gd9.jpeg") }}',
-                'KB-GD 9': '{{ url_for("static", filename="images/kb_gd9.jpeg") }}',
-                'GD 9-Auditorium': '{{ url_for("static", filename="images/gd9_audit.jpeg") }}',
-                'Auditorium-GD 9': '{{ url_for("static", filename="images/gd9_audit.jpeg") }}',
-                'GD 9-GD 5': '{{ url_for("static", filename="images/gd9_gd5.jpeg") }}',
-                'GD 5-GD 9': '{{ url_for("static", filename="images/gd9_gd5.jpeg") }}',
-                'GD 9-GD 7': '{{ url_for("static", filename="images/gd9_gd7.jpeg") }}',
-                'GD 7-GD 9': '{{ url_for("static", filename="images/gd9_gd7.jpeg") }}',
-                'GD 9-KL': '{{ url_for("static", filename="images/kl_gd9.jpeg") }}',
-                'KL-GD 9': '{{ url_for("static", filename="images/kl_gd9.jpeg") }}',
-                'KB-Auditorium': '{{ url_for("static", filename="images/kb_audit.jpeg") }}',
-                'Auditorium-KB': '{{ url_for("static", filename="images/kb_audit.jpeg") }}',
-                'KB-GD 5': '{{ url_for("static", filename="images/kb_gd5.jpeg") }}',
-                'GD 5-KB': '{{ url_for("static", filename="images/kb_gd5.jpeg") }}',
-                'KB-GD 7': '{{ url_for("static", filename="images/kb_gd7.jpeg") }}',
-                'GD 7-KB': '{{ url_for("static", filename="images/kb_gd7.jpeg") }}',
-                'Auditorium-GD 5': '{{ url_for("static", filename="images/gd5_audit.jpeg") }}',
-                'GD 5-Auditorium': '{{ url_for("static", filename="images/gd5_audit.jpeg") }}',
-                'Auditorium-GD 7': '{{ url_for("static", filename="images/gd7_audit.jpeg") }}',
-                'GD 7-Auditorium': '{{ url_for("static", filename="images/gd7_audit.jpeg") }}',
-                'Auditorium-KL': '{{ url_for("static", filename="images/kl_audit.jpeg") }}',
-                'KL-Auditorium': '{{ url_for("static", filename="images/kl_audit.jpeg") }}',
-                'GD 5-GD 7': '{{ url_for("static", filename="images/gd7_gd5.jpeg") }}',
-                'GD 7-GD 5': '{{ url_for("static", filename="images/gd7_gd5.jpeg") }}',
-                'GD 5-KL': '{{ url_for("static", filename="images/kl_gd5.jpeg") }}',
-                'KL-GD 5': '{{ url_for("static", filename="images/kl_gd5.jpeg") }}',
-                'GD 7-KL': '{{ url_for("static", filename="images/kl_gd7.jpeg") }}',
-                'KL-GD 7': '{{ url_for("static", filename="images/kl_gd7.jpeg") }}',
-            };
-
-            var imageKey = startBuilding + '-' + endBuilding;
-
-            if (imagePaths.hasOwnProperty(imageKey)) {
-                document.getElementById('buildingImage').src = imagePaths[imageKey];
-            } else {
-                document.getElementById('buildingImage').src = '{{ url_for("static", filename="images/main_graph.jpeg") }}';
-            }
         }
     </script>
 
